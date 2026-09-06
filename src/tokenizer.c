@@ -39,14 +39,15 @@ const char *debug_type(TokenType type)
     case END:
         return "END";
         break;
-    
+
     default:
         return "UNKNOWN";
         break;
     }
 }
 
-int isAlpha(char c) {
+int isAlpha(char c)
+{
 
     return (c >= 'a' && c <= 'z') ||
            (c >= 'A' && c <= 'Z') ||
@@ -63,8 +64,19 @@ int isAlnum(char c)
     return isAlpha(c) || isNum(c);
 }
 
+void skip_comment(Lexer *lexer)
+{
+    if (lexer->c[lexer->size] == '@')
+    {
+        while (lexer->c[lexer->size] != '\n' && lexer->c[lexer->size] != '\0')
+        {
+            lexer->size++;
+        }
+    }
+}
 
-TokenType KW_find(const char *str) {
+TokenType KW_find(const char *str)
+{
 
     for (size_t i = 0; i < sizeof(keywords) / sizeof(keywords[0]); i++)
     {
@@ -72,9 +84,8 @@ TokenType KW_find(const char *str) {
         {
             return keywords[i].type;
         }
-        
     }
-    
+
     return IDENTIFIER;
 }
 
@@ -83,16 +94,19 @@ Token next_token(Lexer *lexer)
     Token n_token;
     n_token.line = lexer->line;
     sskip(lexer);
+    skip_comment(lexer);
     int start = lexer->size;
 
     char c = lexer->c[lexer->size];
 
-    if (c == '\0') {
+    if (c == '\0')
+    {
         n_token.type = END;
         return n_token;
     }
 
-    if (c == '\n') {
+    if (c == '\n')
+    {
         n_token.type = NEWLINE;
         lexer->line++;
         lexer->size++;
@@ -115,40 +129,40 @@ Token next_token(Lexer *lexer)
         return n_token;
     }
 
-    if (isAlpha(c)) {
-       while (isAlnum(lexer->c[lexer->size]))
-       {
+    if (isAlpha(c))
+    {
+        while (isAlnum(lexer->c[lexer->size]))
+        {
             lexer->size++;
-       }
-       int len = lexer->size - start;
-       char *str = malloc(len + 1);
+        }
+        int len = lexer->size - start;
+        char *str = malloc(len + 1);
 
-       if (str == NULL) {
+        if (str == NULL)
+        {
             n_token.type = UNKNOWN;
             return n_token;
-       }
+        }
 
-       memcpy(str, &lexer->c[start], len);
-       str[len] = '\0';
+        memcpy(str, &lexer->c[start], len);
+        str[len] = '\0';
 
-       n_token.type = KW_find(str);
-       n_token.val.sval = str;
+        n_token.type = KW_find(str);
+        n_token.val.sval = str;
 
-       return n_token;
-       
+        return n_token;
     }
 
     n_token.type = UNKNOWN;
     lexer->size++;
     return n_token;
-    
 }
 
 // int main() {
 //     Lexer lexer;
 //     lexer.c = "ADD 10";
 //     lexer.size = 0;
-    
+
 //     printf("%s\n", debug_type(next_token(&lexer).type));
 //     printf("%s\n", debug_type(next_token(&lexer).type));
 //     printf("%s\n", debug_type(next_token(&lexer).type));
