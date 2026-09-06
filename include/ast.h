@@ -4,6 +4,9 @@
 typedef enum {
     AST_PRINT,
     AST_ADD,
+    AST_SUB,
+    AST_GOTO,
+    AST_SET,
 
     AST_INT,
     AST_IDENT,

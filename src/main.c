@@ -4,9 +4,11 @@
 #include "ast.h"
 #include "openfile.h"
 
+#define MAX_MEM 256
+
 typedef struct Machine
 {
-    int memory[256];
+    int memory[MAX_MEM];
     int cursor;
 } Machine;
 
@@ -20,6 +22,11 @@ void execute(ASTnode *node, Machine *machine)
     switch (node->type)
     {
     case AST_PRINT:
+        if (node->left == NULL)
+        {
+            printf("%d", machine->memory[machine->cursor]);
+        }
+
         if (node->left != NULL && node->left->type == AST_INT)
         {
             printf("%d\n", node->left->value);
@@ -29,8 +36,15 @@ void execute(ASTnode *node, Machine *machine)
     case AST_ADD:
         if (node->left != NULL && node->left->type == AST_INT)
         {
-            machine->memory[machine->cursor] = node->left->value;
-            printf("%d\n", machine->memory[machine->cursor]);
+            machine->memory[machine->cursor] += node->left->value;
+        }
+
+        break;
+
+    case AST_SUB:
+        if (node->left != NULL && node->left->type == AST_INT)
+        {
+            machine->memory[machine->cursor] -= node->left->value;
         }
         break;
 
@@ -78,7 +92,9 @@ int main(int argc, char *argv[])
                 advance(&parser);
             }
         }
-    } else {
+    }
+    else
+    {
         fprintf(stderr, "./axis (filename)");
     }
 

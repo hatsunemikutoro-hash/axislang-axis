@@ -8,6 +8,9 @@ typedef enum {
 
     KW_PRINT,
     KW_ADD,
+    KW_SUB,
+    KW_GOTO,
+    KW_SET,
 
     END,
     UNKNOWN
@@ -39,7 +42,8 @@ typedef struct Lexer
 
 static const Keyword keywords[] = {
     {"PRINT", KW_PRINT},
-    {"ADD", KW_ADD}
+    {"ADD", KW_ADD},
+    {"SUB", KW_SUB}
 };
 
 Token next_token(Lexer *lexer);
