@@ -105,6 +105,42 @@ ASTnode *parse_sub(Parser *parser) {
         return node;
     }
 
+ASTnode *parse_goto(Parser *parser) {
+        ASTnode *node = parse_single_instruction(parser, AST_GOTO);
+
+        if (node == NULL)
+        {
+            return NULL;
+        }
+
+        if (node->left == NULL)
+        {
+            fprintf(stderr, "GOTO EXPECTS 1 ARGUMENT: Line %d\n", parser->current.line);
+
+            free_ast(node);
+            return NULL;
+        }
+        return node;
+    }
+
+ASTnode *parse_set(Parser *parser) {
+        ASTnode *node = parse_single_instruction(parser, AST_SET);
+
+        if (node == NULL)
+        {
+            return NULL;
+        }
+
+        if (node->left == NULL)
+        {
+            fprintf(stderr, "SET EXPECTS 1 ARGUMENT: Line %d\n", parser->current.line);
+
+            free_ast(node);
+            return NULL;
+        }
+        return node;
+    }
+
 ASTnode *parse_instruction(Parser *parser)
 {
     switch (parser->current.type)
@@ -117,6 +153,12 @@ ASTnode *parse_instruction(Parser *parser)
 
     case KW_SUB:
         return parse_sub(parser);
+
+    case KW_GOTO:
+        return parse_goto(parser);
+
+    case KW_SET:
+        return parse_set(parser);
 
     default:
         return NULL;;

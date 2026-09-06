@@ -48,6 +48,20 @@ void execute(ASTnode *node, Machine *machine)
         }
         break;
 
+    case AST_GOTO:
+        if (node->left != NULL && node->left->type == AST_INT)
+        {
+            machine->cursor = node->left->value;
+        }
+        break;
+
+    case AST_SET:
+        if (node->left != NULL && node->left->type == AST_INT)
+        {
+            machine->memory[machine->cursor] = node->left->value;
+        }
+        break;
+
     default:
         break;
     }

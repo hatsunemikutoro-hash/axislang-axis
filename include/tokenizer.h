@@ -43,7 +43,9 @@ typedef struct Lexer
 static const Keyword keywords[] = {
     {"PRINT", KW_PRINT},
     {"ADD", KW_ADD},
-    {"SUB", KW_SUB}
+    {"SUB", KW_SUB},
+    {"GOTO", KW_GOTO},
+    {"SET", KW_SET}
 };
 
 Token next_token(Lexer *lexer);
