@@ -10,7 +10,7 @@ typedef enum {
 
     AST_INT,
     AST_IDENT,
-    AST_MUL,
+    AST_MULT,
     AST_DIV
 } ASTType;
 

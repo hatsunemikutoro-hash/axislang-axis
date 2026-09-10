@@ -11,6 +11,8 @@ typedef enum {
     KW_SUB,
     KW_GOTO,
     KW_SET,
+    KW_MULT,
+    KW_DIV,
 
     END,
     UNKNOWN
@@ -45,7 +47,9 @@ static const Keyword keywords[] = {
     {"ADD", KW_ADD},
     {"SUB", KW_SUB},
     {"GOTO", KW_GOTO},
-    {"SET", KW_SET}
+    {"SET", KW_SET},
+    {"MULT", KW_MULT},
+    {"DIV", KW_DIV}
 };
 
 Token next_token(Lexer *lexer);

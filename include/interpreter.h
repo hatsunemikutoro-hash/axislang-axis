@@ -5,7 +5,6 @@
 #include "parser.h"
 #include "vm.h"
 
-
 typedef struct Interpreter
 {
     Parser *parser;

@@ -67,6 +67,18 @@ void vm_execute(Machine *machine, ASTnode *node)
         }
         break;
 
+    case AST_MULT:
+        if (node->left != NULL && node->left->type == AST_INT) {
+            machine->memory[machine->cursor] *= node->left->value;
+        }
+        break;
+
+    case AST_DIV:
+        if (node->left != NULL && node->left->type == AST_INT) {
+            machine->memory[machine->cursor] /= node->left->value;
+        }
+        break;
+
     default:
         break;
     }

@@ -141,6 +141,50 @@ ASTnode *parse_set(Parser *parser) {
         return node;
     }
 
+ASTnode *parse_mult(Parser *parser) {
+        ASTnode *node = parse_single_instruction(parser, AST_MULT);
+
+        if (node == NULL)
+        {
+            return NULL;
+        }
+
+        if (node->left == NULL)
+        {
+            fprintf(stderr, "MULT EXPECTS 1 ARGUMENT: Line %d\n", parser->current.line);
+
+            free_ast(node);
+            return NULL;
+        }
+        return node;
+    }
+
+ASTnode *parse_div(Parser *parser) {
+        ASTnode *node = parse_single_instruction(parser, AST_DIV);
+
+        if (node == NULL)
+        {
+            return NULL;
+        }
+
+        if (node->left == NULL)
+        {
+            fprintf(stderr, "DIV EXPECTS 1 ARGUMENT: Line %d\n", parser->current.line);
+
+            free_ast(node);
+            return NULL;
+        }
+
+        if (node->left->type == AST_INT && node->left->value == 0) {
+             fprintf(stderr, "CANNOT DIVIDE BY 0: Line %d\n", parser->current.line);
+
+            free_ast(node);
+            return NULL;
+        }
+
+        return node;
+    }
+
 ASTnode *parse_instruction(Parser *parser)
 {
     switch (parser->current.type)
@@ -159,6 +203,12 @@ ASTnode *parse_instruction(Parser *parser)
 
     case KW_SET:
         return parse_set(parser);
+
+    case KW_MULT:
+        return parse_mult(parser);
+    
+    case KW_DIV:
+        return parse_div(parser);
 
     default:
         return NULL;;
