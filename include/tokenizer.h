@@ -1,16 +1,23 @@
 #ifndef TOKENIZER_H
 #define TOKENIZER_H
 
-typedef enum {
+typedef enum TokenType{
     INT,
     IDENTIFIER,
+    STRING,
     NEWLINE,
 
+    // BuildIn functions
+
     KW_PRINT,
-    KW_ADD,
-    KW_SUB,
     KW_GOTO,
     KW_SET,
+    KW_PRINTC,
+
+    // math shit
+
+    KW_ADD,
+    KW_SUB,
     KW_MULT,
     KW_DIV,
 
@@ -43,11 +50,17 @@ typedef struct Lexer
 } Lexer;
 
 static const Keyword keywords[] = {
+    // buiiçldin fuction
+
     {"PRINT", KW_PRINT},
-    {"ADD", KW_ADD},
-    {"SUB", KW_SUB},
     {"GOTO", KW_GOTO},
     {"SET", KW_SET},
+    {"PRINTC", KW_PRINTC},
+
+    // math shit
+
+    {"ADD", KW_ADD},
+    {"SUB", KW_SUB},
     {"MULT", KW_MULT},
     {"DIV", KW_DIV}
 };

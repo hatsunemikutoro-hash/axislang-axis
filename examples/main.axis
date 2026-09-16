@@ -1,3 +1,4 @@
-ADD 4
-DIV 2
-PRINT
+
+PRINTC "Hello World"
+PRINTC "VAI TOMAR NO CU"
+PRINTC "É A AXIS CARALHO!!!!!!!!"

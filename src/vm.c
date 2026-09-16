@@ -26,6 +26,8 @@ void vm_execute(Machine *machine, ASTnode *node)
 
     switch (node->type)
     {
+        // BUILD-IN FUNCTIONS
+
     case AST_PRINT:
         if (node->left == NULL)
         {
@@ -34,14 +36,44 @@ void vm_execute(Machine *machine, ASTnode *node)
 
         if (node->left != NULL && node->left->type == AST_INT)
         {
-            printf("%d\n", node->left->value);
+            printf("%d\n", node->left->value.ival);
+        }
+        break;
+    
+    case AST_PRINTC:
+        if (node->left == NULL) {
+            printf("%c", machine->memory[machine->cursor]);
+        }
+
+        if (node->left != NULL && node->left->type == AST_INT) {
+            printf("%c", node->left->value.ival);
+        }
+
+        if (node->left != NULL && node->left->type == AST_STRING) {
+            printf("%s\n", node->left->value.sval);
+        }
+        break;
+    
+    case AST_GOTO:
+        if (node->left != NULL && node->left->type == AST_INT)
+        {
+            machine->cursor = node->left->value.ival;
+        }
+        break;
+        
+        // MATH UFNCTIONs
+
+    case AST_SET:
+        if (node->left != NULL && node->left->type == AST_INT)
+        {
+            machine->memory[machine->cursor] = node->left->value.ival;
         }
         break;
 
     case AST_ADD:
         if (node->left != NULL && node->left->type == AST_INT)
         {
-            machine->memory[machine->cursor] += node->left->value;
+            machine->memory[machine->cursor] += node->left->value.ival;
         }
 
         break;
@@ -49,33 +81,21 @@ void vm_execute(Machine *machine, ASTnode *node)
     case AST_SUB:
         if (node->left != NULL && node->left->type == AST_INT)
         {
-            machine->memory[machine->cursor] -= node->left->value;
-        }
-        break;
-
-    case AST_GOTO:
-        if (node->left != NULL && node->left->type == AST_INT)
-        {
-            machine->cursor = node->left->value;
-        }
-        break;
-
-    case AST_SET:
-        if (node->left != NULL && node->left->type == AST_INT)
-        {
-            machine->memory[machine->cursor] = node->left->value;
+            machine->memory[machine->cursor] -= node->left->value.ival;
         }
         break;
 
     case AST_MULT:
-        if (node->left != NULL && node->left->type == AST_INT) {
-            machine->memory[machine->cursor] *= node->left->value;
+        if (node->left != NULL && node->left->type == AST_INT)
+        {
+            machine->memory[machine->cursor] *= node->left->value.ival;
         }
         break;
 
     case AST_DIV:
-        if (node->left != NULL && node->left->type == AST_INT) {
-            machine->memory[machine->cursor] /= node->left->value;
+        if (node->left != NULL && node->left->type == AST_INT)
+        {
+            machine->memory[machine->cursor] /= node->left->value.ival;
         }
         break;
 

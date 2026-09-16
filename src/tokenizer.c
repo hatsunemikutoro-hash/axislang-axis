@@ -99,6 +99,45 @@ Token next_token(Lexer *lexer)
 
     char c = lexer->c[lexer->size];
 
+    if (c == '"')
+    {
+        lexer->size++;
+        int start = lexer->size;
+
+        while (lexer->c[lexer->size] != '"' && lexer->c[lexer->size] != '\0')
+        {
+            lexer->size++;
+        }
+        
+        if (lexer->c[lexer->size] == '\0') {
+            fprintf(stderr, "LEXICAL ERROR string not terminated missing closing quotes\n");
+            n_token.type = UNKNOWN;
+            return n_token;
+        }
+
+        int len = lexer->size - start;
+        char *str = malloc(len + 1);
+
+        if (str == NULL)
+        {
+            n_token.type = UNKNOWN;
+            return n_token;
+        }
+
+        memcpy(str, &lexer->c[start], len);
+        str[len] = '\0';
+
+        if (lexer->c[lexer->size] == '"')
+        {
+            lexer->size++;
+        }
+
+        n_token.type = STRING;
+        n_token.val.sval = str;
+
+        return n_token;
+    }
+
     if (c == '\0')
     {
         n_token.type = END;
@@ -160,7 +199,7 @@ Token next_token(Lexer *lexer)
 
 // int main() {
 //     Lexer lexer;
-//     lexer.c = "ADD 10";
+//     lexer.c = '"Hello, World"';
 //     lexer.size = 0;
 
 //     printf("%s\n", debug_type(next_token(&lexer).type));

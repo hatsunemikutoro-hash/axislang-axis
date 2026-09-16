@@ -1,27 +1,40 @@
 #ifndef AST_H
 #define AST_H
 
-typedef enum {
+typedef enum
+{
+
+    // bildinkkkkkk
+
     AST_PRINT,
-    AST_ADD,
-    AST_SUB,
     AST_GOTO,
     AST_SET,
+    AST_PRINTC,
+
+    // math shit
+
+    AST_ADD,
+    AST_SUB,
+    AST_MULT,
+    AST_DIV,
 
     AST_INT,
-    AST_IDENT,
-    AST_MULT,
-    AST_DIV
+    AST_STRING,
+    AST_IDENT
+
 } ASTType;
 
 typedef struct ASTnode
 {
     ASTType type;
-    int value;
+    union
+    {
+        int ival;
+        char *sval;
+    } value;
 
     struct ASTnode *left;
     struct ASTnode *right;
-}ASTnode;
-
+} ASTnode;
 
 #endif

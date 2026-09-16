@@ -2,6 +2,18 @@
 #include "ast.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "string.h"
+
+static char *my_strdup(const char *s)
+{
+    size_t len = strlen(s) + 1;
+    char *p = malloc(len);
+    if (p != NULL)
+    {
+        memcpy(p, s, len);
+    }
+    return p;
+}
 
 void free_ast(ASTnode *node)
 {
@@ -10,7 +22,10 @@ void free_ast(ASTnode *node)
 
     free_ast(node->left);
     free_ast(node->right);
-
+    if (node->type == AST_STRING || node->type == AST_IDENT)
+    {
+        free(node->value.sval);
+    }
     free(node);
 }
 
@@ -19,7 +34,7 @@ void advance(Parser *parser)
     parser->current = next_token(parser->lexer);
 }
 
-ASTnode *create_node(ASTType type, int val)
+ASTnode *create_node(ASTType type, Token Tok)
 {
     ASTnode *node = malloc(sizeof(ASTnode));
 
@@ -29,34 +44,57 @@ ASTnode *create_node(ASTType type, int val)
     }
 
     node->type = type;
-    node->value = val;
+
+    switch (type)
+    {
+    case AST_INT:
+        node->value.ival = Tok.val.ival;
+        break;
+
+    // TODO fazer propia strdup pra evitar libc
+    case AST_STRING:
+        node->value.sval = my_strdup(Tok.val.sval);
+        break;
+
+    case AST_IDENT:
+        node->value.sval = my_strdup(Tok.val.sval);
+        break;
+
+    default:
+        break;
+    }
+
     node->left = NULL;
     node->right = NULL;
 
     return node;
 }
 
-ASTnode *parse_int_arg(Parser *parser)
-{
-    if (parser->current.type != INT)
+ASTnode *parse_arg(Parser *parser)
+{   
+    ASTType arg_type;
+    switch (parser->current.type)
+    {
+    case INT: arg_type = AST_INT; break;
+    case STRING: arg_type = AST_STRING; break;
+    case IDENTIFIER: arg_type = AST_IDENT; break;
+    
+    default: return NULL; break;
+    }
+    ASTnode *arg1 = create_node(arg_type, parser->current);
+
+    if (arg1 == NULL)
     {
         return NULL;
     }
 
-    ASTnode *arg1 = create_node(AST_INT, parser->current.val.ival);
-
-    if (arg1 == NULL) {
-        return NULL;
-    }
-
     advance(parser);
-
     return arg1;
 }
 
 ASTnode *parse_single_instruction(Parser *parser, ASTType type)
 {
-    ASTnode *node = create_node(type, 0);
+    ASTnode *node = create_node(type, parser->current);
 
     if (node == NULL)
     {
@@ -64,126 +102,57 @@ ASTnode *parse_single_instruction(Parser *parser, ASTType type)
     }
     advance(parser);
 
-    node->left = parse_int_arg(parser);
+    node->left = parse_arg(parser);
 
     return node;
 }
 
-ASTnode *parse_add(Parser *parser) {
-        ASTnode *node = parse_single_instruction(parser, AST_ADD);
+ASTnode *parse_single_instruction_arg(Parser *parser, ASTType type, const char *error_msg)
+{
+    ASTnode *node = parse_single_instruction(parser, type);
 
-        if (node == NULL)
-        {
-            return NULL;
-        }
-
-        if (node->left == NULL)
-        {
-            fprintf(stderr, "ADD EXPECTS 1 ARGUMENT: Line %d\n", parser->current.line);
-
-            free_ast(node);
-            return NULL;
-        }
-        return node;
+    if (node == NULL)
+    {
+        return NULL;
     }
 
-ASTnode *parse_sub(Parser *parser) {
-        ASTnode *node = parse_single_instruction(parser, AST_SUB);
+    if (node->left == NULL)
+    {
+        fprintf(stderr, "%s EXPECTS 1 ARGUMENT: Line %d\n", error_msg, parser->current.line);
 
-        if (node == NULL)
-        {
-            return NULL;
-        }
+        free_ast(node);
+        return NULL;
+    }
+    return node;
+}
 
-        if (node->left == NULL)
-        {
-            fprintf(stderr, "SUB EXPECTS 1 ARGUMENT: Line %d\n", parser->current.line);
+ASTnode *parse_div(Parser *parser)
+{
+    ASTnode *node = parse_single_instruction(parser, AST_DIV);
 
-            free_ast(node);
-            return NULL;
-        }
-        return node;
+    if (node == NULL)
+    {
+        return NULL;
     }
 
-ASTnode *parse_goto(Parser *parser) {
-        ASTnode *node = parse_single_instruction(parser, AST_GOTO);
+    if (node->left == NULL)
+    {
+        fprintf(stderr, "DIV EXPECTS 1 ARGUMENT: Line %d\n", parser->current.line);
 
-        if (node == NULL)
-        {
-            return NULL;
-        }
-
-        if (node->left == NULL)
-        {
-            fprintf(stderr, "GOTO EXPECTS 1 ARGUMENT: Line %d\n", parser->current.line);
-
-            free_ast(node);
-            return NULL;
-        }
-        return node;
+        free_ast(node);
+        return NULL;
     }
 
-ASTnode *parse_set(Parser *parser) {
-        ASTnode *node = parse_single_instruction(parser, AST_SET);
+    if (node->left->type == AST_INT && node->left->value.ival == 0)
+    {
+        fprintf(stderr, "CANNOT DIVIDE BY 0: Line %d\n", parser->current.line);
 
-        if (node == NULL)
-        {
-            return NULL;
-        }
-
-        if (node->left == NULL)
-        {
-            fprintf(stderr, "SET EXPECTS 1 ARGUMENT: Line %d\n", parser->current.line);
-
-            free_ast(node);
-            return NULL;
-        }
-        return node;
+        free_ast(node);
+        return NULL;
     }
 
-ASTnode *parse_mult(Parser *parser) {
-        ASTnode *node = parse_single_instruction(parser, AST_MULT);
-
-        if (node == NULL)
-        {
-            return NULL;
-        }
-
-        if (node->left == NULL)
-        {
-            fprintf(stderr, "MULT EXPECTS 1 ARGUMENT: Line %d\n", parser->current.line);
-
-            free_ast(node);
-            return NULL;
-        }
-        return node;
-    }
-
-ASTnode *parse_div(Parser *parser) {
-        ASTnode *node = parse_single_instruction(parser, AST_DIV);
-
-        if (node == NULL)
-        {
-            return NULL;
-        }
-
-        if (node->left == NULL)
-        {
-            fprintf(stderr, "DIV EXPECTS 1 ARGUMENT: Line %d\n", parser->current.line);
-
-            free_ast(node);
-            return NULL;
-        }
-
-        if (node->left->type == AST_INT && node->left->value == 0) {
-             fprintf(stderr, "CANNOT DIVIDE BY 0: Line %d\n", parser->current.line);
-
-            free_ast(node);
-            return NULL;
-        }
-
-        return node;
-    }
+    return node;
+}
 
 ASTnode *parse_instruction(Parser *parser)
 {
@@ -192,28 +161,31 @@ ASTnode *parse_instruction(Parser *parser)
     case KW_PRINT:
         return parse_single_instruction(parser, AST_PRINT);
 
+    case KW_PRINTC:
+        return parse_single_instruction(parser, AST_PRINTC);
+
     case KW_ADD:
-        return parse_add(parser);
+        return parse_single_instruction_arg(parser, AST_ADD, "ADD");
 
     case KW_SUB:
-        return parse_sub(parser);
+        return parse_single_instruction_arg(parser, AST_SUB, "SUB");
 
     case KW_GOTO:
-        return parse_goto(parser);
+        return parse_single_instruction_arg(parser, AST_GOTO, "GOTO");
 
     case KW_SET:
-        return parse_set(parser);
+        return parse_single_instruction_arg(parser, AST_SET, "SET");
 
     case KW_MULT:
-        return parse_mult(parser);
-    
+        return parse_single_instruction_arg(parser, AST_MULT, "MULT");
+
     case KW_DIV:
         return parse_div(parser);
 
     default:
-        return NULL;;
+        return NULL;
+        ;
     }
-
 }
 
 // int main()
