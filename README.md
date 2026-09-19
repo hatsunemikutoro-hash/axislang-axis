@@ -1,5 +1,7 @@
 # Axis Language
 
+![Axis Logo](images/axis_logo.png)
+
  ## What is it?
 
  Axis is an instruction- and memory-based programming language that brings together the experience of **Assembly** and **Brainfuck**.
