@@ -47,8 +47,12 @@ make
  For example:
 
 ```
-PRINT 1
-PRINT 2
+printc "Hello, Axis!"
+printc "Two Sum program!"
+
+add 2
+add 2
+print
 ```
 
  ### 5\. Run your program
