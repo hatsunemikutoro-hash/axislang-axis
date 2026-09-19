@@ -113,6 +113,7 @@ void vm_execute(Machine *machine, ASTnode *node)
     
     case AST_EXIT:
         machine->died = 1;
+        break;
     default:
         break;
     }
