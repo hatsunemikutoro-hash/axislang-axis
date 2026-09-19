@@ -13,7 +13,7 @@ Interpreter *interpreter_create(const char *filename)
     lexer->line = 0;
     lexer->c = read_file(filename);
 
-    Parser *parser = malloc(sizeof(Lexer));
+    Parser *parser = malloc(sizeof(Parser));
     parser->lexer = lexer;
     advance(parser);
 

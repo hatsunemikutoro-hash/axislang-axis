@@ -1,7 +1,26 @@
 #include "tokenizer.h"
 #include <stdio.h>
+#include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
+
+size_t slen(const char *str) {
+    size_t len = 0;
+    while (*str++) {
+        len++;
+    }
+    return len;
+    
+}
+
+char *Lower(const char *str)
+{
+    char *new_string = malloc(sizeof(char) * slen(str));
+    for (int i = 0; str[i]; i++) {
+        new_string[i] = tolower(str[i]);
+    }
+    return new_string;
+}
 
 // funcao pra skipa whitespace pode pa
 void sskip(Lexer *lexer)
@@ -80,7 +99,7 @@ TokenType KW_find(const char *str)
 
     for (size_t i = 0; i < sizeof(keywords) / sizeof(keywords[0]); i++)
     {
-        if (strcmp(str, keywords[i].name) == 0)
+        if (strcmp(Lower(str), keywords[i].name) == 0)
         {
             return keywords[i].type;
         }
@@ -108,8 +127,9 @@ Token next_token(Lexer *lexer)
         {
             lexer->size++;
         }
-        
-        if (lexer->c[lexer->size] == '\0') {
+
+        if (lexer->c[lexer->size] == '\0')
+        {
             fprintf(stderr, "LEXICAL ERROR string not terminated missing closing quotes\n");
             n_token.type = UNKNOWN;
             return n_token;
