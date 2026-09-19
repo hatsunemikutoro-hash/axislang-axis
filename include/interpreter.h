@@ -9,6 +9,7 @@ typedef struct Interpreter
 {
     Parser *parser;
     Machine *vm;
+    Program *program;
 } Interpreter;
 
 Interpreter* interpreter_create(const char* filename);

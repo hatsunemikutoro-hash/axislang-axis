@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "string.h"
+#include "program.h"
 
 static char *my_strdup(const char *s)
 {
@@ -71,15 +72,23 @@ ASTnode *create_node(ASTType type, Token Tok)
 }
 
 ASTnode *parse_arg(Parser *parser)
-{   
+{
     ASTType arg_type;
     switch (parser->current.type)
     {
-    case INT: arg_type = AST_INT; break;
-    case STRING: arg_type = AST_STRING; break;
-    case IDENTIFIER: arg_type = AST_IDENT; break;
-    
-    default: return NULL; break;
+    case INT:
+        arg_type = AST_INT;
+        break;
+    case STRING:
+        arg_type = AST_STRING;
+        break;
+    case IDENTIFIER:
+        arg_type = AST_IDENT;
+        break;
+
+    default:
+        return NULL;
+        break;
     }
     ASTnode *arg1 = create_node(arg_type, parser->current);
 
@@ -90,6 +99,19 @@ ASTnode *parse_arg(Parser *parser)
 
     advance(parser);
     return arg1;
+}
+
+ASTnode *parse_instruction_without_arg(Parser *parser, ASTType type)
+{
+    ASTnode *node = create_node(type, parser->current);
+
+    if (node == NULL) {
+        return NULL;
+    }
+
+    advance(parser);
+
+    return node;
 }
 
 ASTnode *parse_single_instruction(Parser *parser, ASTType type)
@@ -170,14 +192,20 @@ ASTnode *parse_instruction(Parser *parser)
     case KW_SUB:
         return parse_single_instruction_arg(parser, AST_SUB, "SUB");
 
-    case KW_GOTO:
-        return parse_single_instruction_arg(parser, AST_GOTO, "GOTO");
+    case KW_MOVE:
+        return parse_single_instruction_arg(parser, AST_MOVE, "MOVE");
+
+    case KW_JUMP:
+        return parse_single_instruction_arg(parser, AST_JUMP, "JUMP");
 
     case KW_SET:
         return parse_single_instruction_arg(parser, AST_SET, "SET");
 
     case KW_MULT:
         return parse_single_instruction_arg(parser, AST_MULT, "MULT");
+
+    case KW_EXIT:
+        return parse_instruction_without_arg(parser, AST_EXIT);
 
     case KW_DIV:
         return parse_div(parser);
@@ -186,6 +214,39 @@ ASTnode *parse_instruction(Parser *parser)
         return NULL;
         ;
     }
+}
+
+Program *parse_program(Parser *parser)
+{
+    Program *program = create_program();
+    if (program == NULL)
+    {
+        return NULL;
+    }
+
+    while (parser->current.type != END)
+    {
+        if (parser->current.type == NEWLINE)
+        {
+            advance(parser);
+            continue;
+        }
+
+        ASTnode *node = parse_instruction(parser);
+
+        if (node == NULL)
+        {
+            advance(parser);
+            continue;
+        }
+
+        if (!program_add(program, node)) {
+            free_ast(node);
+            program_destroy(program);
+            return NULL;
+        }
+    }
+    return program;
 }
 
 // int main()

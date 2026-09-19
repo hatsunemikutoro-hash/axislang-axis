@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include "interpreter.h"
+#include "program.h"
 #include "openfile.h"
 
 Interpreter *interpreter_create(const char *filename)
@@ -20,10 +21,17 @@ Interpreter *interpreter_create(const char *filename)
     interpret->parser = parser;
     interpret->vm = vm_create();
 
+    interpret->program = parse_program(parser);
+
     return interpret;
 }
 
 void interpreter_destroy(Interpreter* interp) {
+    if  (interp == NULL) {
+        return;
+    }
+    program_destroy(interp->program);
+
     free(interp->parser->lexer->c);
     free(interp->parser->lexer);
     free(interp->parser);
@@ -33,21 +41,6 @@ void interpreter_destroy(Interpreter* interp) {
 }
 
 void interpreter_run(Interpreter* interp) {
-    while (interp->parser->current.type != END) 
-    {
-        if (interp->parser->current.type == NEWLINE) {
-            advance(interp->parser);
-            continue;
-        }
-
-        ASTnode *node = parse_instruction(interp->parser);
-        if(node) {
-            vm_execute(interp->vm, node);
-            free_ast(node);
-        } else {
-            advance(interp->parser);
-        }
-        
-    }
+    vm_run(interp->vm, interp->program);
     
 }

@@ -4,11 +4,11 @@ CPPFLAGS = -Iinclude
 
 TARGET = axis
 
-SRC = src/main.c src/parser.c src/tokenizer.c src/openfile.c src/vm.c src/interpreter.c
+SRC = src/main.c src/parser.c src/tokenizer.c src/openfile.c src/vm.c src/interpreter.c src/program.c
 OBJ = $(SRC:src/%.c=build/%.o)
 
 $(TARGET): $(OBJ)
-	$(CC) $(OBJ) -o $(TARGET)
+	$(CC) $(CFLAGS) $(OBJ) -o $(TARGET)
 
 build/%.o: src/%.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@

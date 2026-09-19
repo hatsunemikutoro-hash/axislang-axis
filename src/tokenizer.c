@@ -15,10 +15,13 @@ size_t slen(const char *str) {
 
 char *Lower(const char *str)
 {
-    char *new_string = malloc(sizeof(char) * slen(str));
+    char *new_string = malloc(sizeof(char) * slen(str) + 1);
     for (int i = 0; str[i]; i++) {
         new_string[i] = tolower(str[i]);
     }
+
+    new_string[slen(str)] = '\0';
+
     return new_string;
 }
 

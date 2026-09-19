@@ -3,6 +3,7 @@
 
 #include "ast.h"
 #include "tokenizer.h"
+#include "program.h"
 
 typedef struct Parser
 {
@@ -13,5 +14,6 @@ typedef struct Parser
 void advance(Parser *parser);
 void free_ast(ASTnode *node);
 ASTnode *parse_instruction(Parser *parser);
+Program *parse_program(Parser *parser);
 
 #endif

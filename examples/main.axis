@@ -1,2 +1,3 @@
-
-printc "uhu"
+printc "funcionou?"
+exit
+printc "nao sei"

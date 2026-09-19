@@ -7,9 +7,11 @@ typedef enum
     // bildinkkkkkk
 
     AST_PRINT,
-    AST_GOTO,
+    AST_JUMP,
+    AST_MOVE,
     AST_SET,
     AST_PRINTC,
+    AST_EXIT,
 
     // math shit
 

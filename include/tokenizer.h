@@ -10,9 +10,11 @@ typedef enum TokenType{
     // BuildIn functions
 
     KW_PRINT,
-    KW_GOTO,
+    KW_MOVE,
+    KW_JUMP,
     KW_SET,
     KW_PRINTC,
+    KW_EXIT,
 
     // math shit
 
@@ -53,9 +55,11 @@ static const Keyword keywords[] = {
     // buiiçldin fuction
 
     {"print", KW_PRINT},
-    {"goto", KW_GOTO},
+    {"move", KW_MOVE},
+    {"jump", KW_JUMP},
     {"set", KW_SET},
     {"printc", KW_PRINTC},
+    {"exit", KW_EXIT},
 
     // math shit
 
