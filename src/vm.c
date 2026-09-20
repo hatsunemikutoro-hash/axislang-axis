@@ -19,6 +19,36 @@ void vm_destroy(Machine *machine)
     free(machine);
 }
 
+int resolve_operand(Machine *machine, ASTnode *operand, int *result)
+{
+    if (operand == NULL || result == NULL)
+    {
+        return 0;
+    }
+
+    if (operand->type == AST_INT)
+    {
+        *result = operand->value.ival;
+        return 1;
+    }
+
+    if (operand->type == AST_DEREF && operand->left != NULL && operand->left->type == AST_INT)
+    {
+
+        int address = operand->left->value.ival;
+
+        if (address < 0 || address >= MAX_MEM)
+        {
+            return 0;
+        }
+
+        *result = machine->memory[address];
+        return 1;
+    }
+
+    return 0;
+}
+
 void vm_execute(Machine *machine, ASTnode *node)
 {
     if (node == NULL)
@@ -76,48 +106,61 @@ void vm_execute(Machine *machine, ASTnode *node)
         // MATH UFNCTIONs
 
     case AST_SET:
-        if (node->left != NULL && node->left->type == AST_INT)
         {
-            machine->memory[machine->cursor] = node->left->value.ival;
+        int operand;
+        if (resolve_operand(machine, node->left, &operand))
+        {
+            machine->memory[machine->cursor] = operand;
         }
+        break;
+    }
         break;
 
     case AST_ADD:
-        if (node->left != NULL && node->left->type == AST_DEREF) {
-            // AST_ADD->AST_DEREF->AST_INT->VAL
-            
-            machine->memory[machine->cursor] += machine->memory[node->left->left->value.ival];
-        }
-
-
-        if (node->left != NULL && node->left->type == AST_INT)
+    {
+        int operand;
+        if (resolve_operand(machine, node->left, &operand))
         {
-            machine->memory[machine->cursor] += node->left->value.ival;
-        }
-
-        break;
-
-    case AST_SUB:
-        if (node->left != NULL && node->left->type == AST_INT)
-        {
-            machine->memory[machine->cursor] -= node->left->value.ival;
+            machine->memory[machine->cursor] += operand;
         }
         break;
+    }
+
+        case AST_SUB:
+        {
+        int operand;
+        if (resolve_operand(machine, node->left, &operand))
+        {
+            machine->memory[machine->cursor] -= operand;
+        }
+        break;
+    }
 
     case AST_MULT:
-        if (node->left != NULL && node->left->type == AST_INT)
         {
-            machine->memory[machine->cursor] *= node->left->value.ival;
+        int operand;
+        if (resolve_operand(machine, node->left, &operand))
+        {
+            machine->memory[machine->cursor] *= operand;
         }
         break;
+    }
 
     case AST_DIV:
-        if (node->left != NULL && node->left->type == AST_INT)
         {
-            machine->memory[machine->cursor] /= node->left->value.ival;
+        int operand;
+        if (resolve_operand(machine, node->left, &operand))
+        {   
+            if (operand == 0) {
+                fprintf(stderr, "Axis error: CANNOT DIVIDE BY ZERO\n");
+                break;
+            }
+
+            machine->memory[machine->cursor] /= operand;
         }
         break;
-    
+    }
+
     case AST_EXIT:
         machine->died = 1;
         break;

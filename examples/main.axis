@@ -1,10 +1,18 @@
-@ move pra celula 2 adiciona 20
-move 2 add 20
-print @ é pra sair 20
 
-@ move pro 10 e adiciona 10
-move 0
-add 10
-
-add *2 @ dereferencia celula 2 e adiciona o valor dentro dela, é pra ficar 30
+printc "Célula 0"
+add 100
 print
+printc 10
+
+mov 10
+printc "Celula 10"
+print
+
+@ new line
+printc 10
+
+printc "Set usando dereference"
+set *0
+printc "Agora celula 10 é:"
+print
+printc 10

@@ -53,6 +53,9 @@ printc "Two Sum program!"
 add 2
 add 2
 print
+
+@ new line
+printc 10
 ```
 
  ### 5\. Run your program
