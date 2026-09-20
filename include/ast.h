@@ -20,9 +20,11 @@ typedef enum
     AST_MULT,
     AST_DIV,
 
+    // TYPES
     AST_INT,
     AST_STRING,
-    AST_IDENT
+    AST_IDENT,
+    AST_DEREF
 
 } ASTType;
 

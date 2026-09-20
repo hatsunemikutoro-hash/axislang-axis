@@ -5,6 +5,9 @@
 #include "string.h"
 #include "program.h"
 
+ASTnode *parse_deref(Parser *parser);
+ASTnode *parse_single_instruction(Parser *parser, ASTType type);
+
 static char *my_strdup(const char *s)
 {
     size_t len = strlen(s) + 1;
@@ -85,6 +88,8 @@ ASTnode *parse_arg(Parser *parser)
     case IDENTIFIER:
         arg_type = AST_IDENT;
         break;
+    case STAR:
+        return parse_deref(parser);
 
     default:
         return NULL;
@@ -168,6 +173,23 @@ ASTnode *parse_div(Parser *parser)
     if (node->left->type == AST_INT && node->left->value.ival == 0)
     {
         fprintf(stderr, "CANNOT DIVIDE BY 0: Line %d\n", parser->current.line);
+
+        free_ast(node);
+        return NULL;
+    }
+
+    return node;
+}
+
+ASTnode *parse_deref(Parser *parser) {
+    ASTnode *node = parse_single_instruction(parser, AST_DEREF);
+
+    if (node == NULL) {
+        return NULL;
+    }
+
+    if (node->left == NULL) {
+        fprintf(stderr, "CANNOT MAKE A DEREFERENCE WITHOUT A ADDRESS: Line %d\n", parser->current.line);
 
         free_ast(node);
         return NULL;

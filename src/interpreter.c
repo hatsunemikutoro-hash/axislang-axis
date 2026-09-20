@@ -11,7 +11,7 @@ Interpreter *interpreter_create(const char *filename)
 
     Lexer *lexer = malloc(sizeof(Lexer));
     lexer->size = 0;
-    lexer->line = 0;
+    lexer->line = 1;
     lexer->c = read_file(filename);
 
     Parser *parser = malloc(sizeof(Parser));

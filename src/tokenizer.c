@@ -121,6 +121,7 @@ Token next_token(Lexer *lexer)
 
     char c = lexer->c[lexer->size];
 
+    // string tokenization
     if (c == '"')
     {
         lexer->size++;
@@ -161,12 +162,14 @@ Token next_token(Lexer *lexer)
         return n_token;
     }
 
+    // end of file token
     if (c == '\0')
     {
         n_token.type = END;
         return n_token;
     }
 
+    // new line token
     if (c == '\n')
     {
         n_token.type = NEWLINE;
@@ -175,6 +178,14 @@ Token next_token(Lexer *lexer)
         return n_token;
     }
 
+    // star tokenization
+    if (c == '*') {
+        n_token.type = STAR;
+        lexer->size++;
+        return n_token;
+    }
+
+    // int tokenization
     if (isNum(lexer->c[lexer->size]))
     {
         int number = 0;
@@ -191,6 +202,7 @@ Token next_token(Lexer *lexer)
         return n_token;
     }
 
+    // identifier and keyword tokenizer
     if (isAlpha(c))
     {
         while (isAlnum(lexer->c[lexer->size]))

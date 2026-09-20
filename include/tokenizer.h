@@ -23,6 +23,10 @@ typedef enum TokenType{
     KW_MULT,
     KW_DIV,
 
+    // types
+
+    STAR,
+
     END,
     UNKNOWN
 } TokenType;

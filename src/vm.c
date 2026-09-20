@@ -83,6 +83,13 @@ void vm_execute(Machine *machine, ASTnode *node)
         break;
 
     case AST_ADD:
+        if (node->left != NULL && node->left->type == AST_DEREF) {
+            // AST_ADD->AST_DEREF->AST_INT->VAL
+            
+            machine->memory[machine->cursor] += machine->memory[node->left->left->value.ival];
+        }
+
+
         if (node->left != NULL && node->left->type == AST_INT)
         {
             machine->memory[machine->cursor] += node->left->value.ival;
