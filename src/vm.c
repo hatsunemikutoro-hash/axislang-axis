@@ -94,7 +94,7 @@ void vm_execute(Machine *machine, ASTnode *node)
         int operand;
         if (resolve_operand(machine, node->left, &operand))
         {
-            machine->memory[machine->cursor] = operand;
+            machine->cursor = operand;
         }
         break;
     }
