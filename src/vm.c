@@ -90,11 +90,14 @@ void vm_execute(Machine *machine, ASTnode *node)
         break;
 
     case AST_MOVE:
-        if (node->left != NULL && node->left->type == AST_INT)
+    {
+        int operand;
+        if (resolve_operand(machine, node->left, &operand))
         {
-            machine->cursor = node->left->value.ival;
+            machine->memory[machine->cursor] = operand;
         }
         break;
+    }
 
     case AST_JUMP:
         if (node->left != NULL && node->left->type == AST_INT)
@@ -106,7 +109,7 @@ void vm_execute(Machine *machine, ASTnode *node)
         // MATH UFNCTIONs
 
     case AST_SET:
-        {
+    {
         int operand;
         if (resolve_operand(machine, node->left, &operand))
         {
@@ -125,8 +128,8 @@ void vm_execute(Machine *machine, ASTnode *node)
         break;
     }
 
-        case AST_SUB:
-        {
+    case AST_SUB:
+    {
         int operand;
         if (resolve_operand(machine, node->left, &operand))
         {
@@ -136,7 +139,7 @@ void vm_execute(Machine *machine, ASTnode *node)
     }
 
     case AST_MULT:
-        {
+    {
         int operand;
         if (resolve_operand(machine, node->left, &operand))
         {
@@ -146,11 +149,12 @@ void vm_execute(Machine *machine, ASTnode *node)
     }
 
     case AST_DIV:
-        {
+    {
         int operand;
         if (resolve_operand(machine, node->left, &operand))
-        {   
-            if (operand == 0) {
+        {
+            if (operand == 0)
+            {
                 fprintf(stderr, "Axis error: CANNOT DIVIDE BY ZERO\n");
                 break;
             }
