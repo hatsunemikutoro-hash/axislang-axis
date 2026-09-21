@@ -114,7 +114,6 @@ void vm_execute(Machine *machine, ASTnode *node)
         }
         break;
     }
-        break;
 
     case AST_ADD:
     {

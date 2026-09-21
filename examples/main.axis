@@ -4,7 +4,7 @@ add 100
 print
 printc 10
 
-mov 10
+move 10
 printc "Celula 10"
 print
 
