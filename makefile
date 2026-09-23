@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Wpedantic -std=c11 -g
 CPPFLAGS = -Iinclude
 
-TARGET = axis
+TARGET = axys
 
 SRC = src/main.c src/parser.c src/tokenizer.c src/openfile.c src/vm.c src/interpreter.c src/program.c
 OBJ = $(SRC:src/%.c=build/%.o)
