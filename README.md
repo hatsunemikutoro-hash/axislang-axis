@@ -1,4 +1,4 @@
-# Axus Language
+# Axys Language
 
 ![Axys Logo](images/Axys_logo.png)
 
